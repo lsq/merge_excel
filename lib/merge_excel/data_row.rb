@@ -9,12 +9,6 @@ module MergeExcel
             book_filename
           else
             cell_value_at(e[:data][:sheet_idx], e[:data][:row_idx], e[:data][:col_idx])
-            # if is_xls
-            #   book.worksheet(e[:data][:sheet_idx]).row(e[:data][:row_idx])[e[:data][:col_idx]]
-            # else
-            #   c = book.worksheets[e[:data][:sheet_idx]][e[:data][:row_idx]][e[:data][:col_idx]]
-            #   c && c.value
-            # end
           end
         end
         case extra_data_hash[:position]
