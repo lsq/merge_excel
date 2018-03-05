@@ -1,10 +1,12 @@
 module MergeExcel
   class SpreadsheetWriter
-    def self.create(filepath, format)
-      wb = case format
+    extend FormatDetector
+
+    def self.create(filepath)
+      extname = detect_format(filepath)
+      wb = case extname
       when :xls
         Spreadsheet::Workbook.new
-
       when :xlsx
         RubyXL::Workbook.new
       else

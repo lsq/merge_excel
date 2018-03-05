@@ -1,14 +1,28 @@
 module MergeExcel
   class SpreadsheetParser
-    def self.open(filepath, format)
-      case format
+    extend FormatDetector
+
+    def self.open(filepath)
+      extname = detect_format(filepath)
+      case extname
       when :xls
-        Spreadsheet.open(filepath)
+        book = Spreadsheet.open(filepath)
       when :xlsx
-        RubyXL::Parser.parse(filepath)
-      else
-        raise "Invalid format"
+        book = RubyXL::Parser.parse(filepath)
       end
+      book.instance_variable_set(:@extname, extname)
+      book.instance_variable_set(:@filename, File.basename(filepath))
+
+      def book.xls?
+        @extname==:xls ? true : false
+      end
+      def book.xlsx?
+        !book.xls?
+      end
+      def book.filename
+        @filename
+      end
+      book
     end
   end
 end

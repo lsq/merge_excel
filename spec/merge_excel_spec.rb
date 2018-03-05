@@ -13,7 +13,8 @@ describe MergeExcel do
 
   it 'select only xls files' do
     options = {
-      input_dir: mixed_xls_xlsx_dir_path
+      input_dir: mixed_xls_xlsx_dir_path,
+      output_file_path: File.join(results_dir_path, "fake_name.xlsx")
     }
     e = MergeExcel::Excel.new(options, "*.xls")
     expect(e.files.size).to eq 2
@@ -21,7 +22,8 @@ describe MergeExcel do
 
   it 'select only xlsx files' do
     options = {
-      input_dir: mixed_xls_xlsx_dir_path
+      input_dir: mixed_xls_xlsx_dir_path,
+      output_file_path: File.join(results_dir_path, "fake_name.xlsx")
     }
     e = MergeExcel::Excel.new(options, "*.xlsx")
     expect(e.files.size).to eq 3
@@ -29,7 +31,8 @@ describe MergeExcel do
 
   it 'select both xls and xlsx files' do
     options = {
-      input_dir: mixed_xls_xlsx_dir_path
+      input_dir: mixed_xls_xlsx_dir_path,
+      output_file_path: File.join(results_dir_path, "fake_name.xlsx")
     }
     e = MergeExcel::Excel.new(options, "*.{xlsx,xls}")
     expect(e.files.size).to eq 5

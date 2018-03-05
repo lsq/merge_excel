@@ -1,56 +1,33 @@
 module MergeExcel
   class WBook
-    attr_reader :sheets, :hash, :format, :filepath, :filename
+    attr_reader :sheets, :settings
 
-    def initialize(filepath, hash)
-      @sheets   = []
-      @hash     = hash
-      @format   = detect_format(filepath) # :xls or :xlsx
-      @filepath = filepath
-      @filename = File.basename(filepath)
-
-      book = SpreadsheetParser.open(filepath, @format)
-      book.worksheets.each_with_index do |sheet, idx|
-        i = 0
-        if @hash[:sheets_idxs]==:all || @hash[:sheets_idxs].include?(idx)
-          raise InvalidOptions if !@hash[:header_rows].keys.include?(idx)
-          s = @hash[:header_rows][idx] # settings
-          sh = Sheet.new(idx, i, sheet.sheet_name, self)
-          arr = sheet.row_values(s[:row_idx], s[:from_col_idx], s[:to_col_idx])
-          sh.add_header(arr, @hash[:extra_data][idx])
-          @sheets << sh
-          i+=1
-        end
-      end
+    def initialize(settings)
+      @sheets   = Sheets.new
+      @settings = settings
     end
-
-
-    def sheet(original_idx: )
-      @sheets.find{|s| s.original_idx==original_idx}
-    end
-
 
     def import_data(filepath)
-      book = SpreadsheetParser.open(filepath, @format)
+      book     = SpreadsheetParser.open(filepath)
       filename = File.basename(filepath)
-      @hash[:sheets_idxs].each do |idx|
-        s = sheet(original_idx: idx)
-        sheet_to_read = book.worksheets[idx]
-        if row_settings = @hash[:data_rows][idx] # is an hash
-          row_idx = row_settings[:first_row_idx]
+
+      book.worksheets.each_with_index do |sheet, idx|
+        if @settings.read_sheet? idx
+          sh_stt  = @settings.data_rows.get(idx)
+          sh      = select_sheet(idx) || create_sheet(sheet, idx, sh_stt)
+          row_idx = sh_stt.data_starting_row
           loop do
-            break unless cells = sheet_to_read.row_values(row_idx, row_settings[:from_col_idx], row_settings[:to_col_idx])
-            s.add_data_row(cells, @hash[:extra_data][idx], filename, book)
+            break unless cells = sheet.row_values(row_idx, sh_stt.data_first_column, sh_stt.data_last_column)
+            sh.add_data_row(cells, @settings.extra_data_rows.get(idx), book)
             row_idx+=1
           end
         end
       end
     end
 
-
     def export(filepath)
       print "Exporting data..."
-      SpreadsheetWriter.create(filepath, @format) do |wb|
+      SpreadsheetWriter.create(filepath) do |wb|
         @sheets.each_with_index do |sheet, sheet_idx|
           s = wb.add_worksheet_at(sheet_idx, sheet.name)
           s.add_row_at(0, sheet.header)
@@ -62,16 +39,22 @@ module MergeExcel
       puts "finished!"
     end
 
+
     private
-      def detect_format(filepath)
-        case File.extname(filepath)
-        when ".xls"
-          :xls
-        when ".xlsx"
-          :xlsx
-        else
-          raise "Invalid format"
-        end
+
+    def select_sheet(idx)
+      @sheets.get_sheet(original_idx: idx)
+    end
+
+    def create_sheet(sheet, idx, sh_stt)
+      sh = Sheet.new(sheet, idx)
+      if sh_stt.import_header?
+        arr = sheet.row_values(sh_stt.header_row, sh_stt.data_first_column, sh_stt.data_last_column)
+        sh.add_header(arr, @settings.extra_data_rows.get(idx)) # TODO: funziona questo @settings.extra_data_rows.get(idx)
       end
+      @sheets << sh
+      sh
+    end
+
   end
 end

@@ -1,12 +1,13 @@
 module MergeExcel
   class Sheet
-    attr_reader :original_idx, :idx, :name, :header, :data_rows
-    def initialize(original_idx, idx, name, book)
-      @original_idx = original_idx
-      @idx = idx
-      @name = name
+    attr_reader :source_sheet, :source_sheet_idx, :sheet_idx, :name, :book, :header, :data_rows
+    def initialize(source_sheet, source_sheet_idx)
+      @source_sheet     = source_sheet
+      @source_sheet_idx = source_sheet_idx
+      @name             = @source_sheet.sheet_name
+      @book             = @source_sheet.workbook
+
       @header = nil
-      @book = book
       @data_rows = []
     end
 
@@ -14,8 +15,8 @@ module MergeExcel
       @header = Header.new(array, extra_data)
     end
 
-    def add_data_row(array, extra_data, book_filename, book)
-      @data_rows << DataRow.new(array || [], extra_data, book_filename, book).array
+    def add_data_row(array, extra_data, book)
+      @data_rows << DataRow.new(array || [], extra_data, book).array
     end
   end
 end

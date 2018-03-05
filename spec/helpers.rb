@@ -23,38 +23,28 @@ module Helpers
       input_dir:        input_dir_path,
       output_file_path: output_file_path,
       sheets_idxs:      [0,1,2],
-      header_rows: {
-        0 => {
-          row_idx: 0,
-          from_col_idx: 0,
-          to_col_idx: 9
-        },
-        1 => {
-          row_idx: 0,
-          from_col_idx: 0,
-          to_col_idx: 7
-        },
-        2 => {
-          row_idx: 0,
-          from_col_idx: 0,
-          to_col_idx: 2
-        }
-      },
       data_rows: {
         0 => {
-          first_row_idx: 1,
-          from_col_idx: 0,
-          to_col_idx: 9
+          header_row: 0, # or :missing
+          data_starting_row: 1,
+          data_first_column: 0,
+          data_last_column: 9 # omit or :last to get all columns
         },
         1 => {
-          first_row_idx: 1,
-          from_col_idx: 0,
-          to_col_idx: 7
+          header_row: 0,
+          data_starting_row: 1,
+          data_first_column: 0,
+          data_last_column: 7
         },
         2 => {
-          first_row_idx: 1,
-          from_col_idx: 0,
-          to_col_idx: 2
+          header_row: 0,
+          data_starting_row: 1,
+          data_first_column: 0,
+          data_last_column: 2
+        }
+      },
+      extra_data_rows: {
+        any: {          
         }
       }
       # extra_data: {
@@ -62,8 +52,16 @@ module Helpers
       #     position: :beginning,
       #     data: [
       #       {
-      #         heading_text: "Filename",
-      #         data: :filename
+      #         type: :filename
+      #         label: "Filename",
+      #       },
+      #       {
+      #         type: :cell_value,
+      #         label: "Company",
+      #         sheet_idx: 6,
+      #         row_idx: 5,
+      #         col_idx: 4,
+
       #       }
       #     ]
       #   },
