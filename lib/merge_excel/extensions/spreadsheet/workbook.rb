@@ -8,5 +8,9 @@ module Spreadsheet
     def cell_value_at(sheet_idx, row_idx, col_idx)
       worksheet(sheet_idx).row(row_idx)[col_idx]
     end
+
+    def count_worksheets
+      worksheets.size
+    end
   end
 end

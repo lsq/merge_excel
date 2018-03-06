@@ -10,5 +10,9 @@ module RubyXL
       c = worksheets[sheet_idx][row_idx][col_idx]
       c && c.value
     end
+
+    def count_worksheets
+      worksheets.size
+    end
   end
 end
