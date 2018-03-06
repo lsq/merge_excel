@@ -1,7 +1,8 @@
 module MergeExcel
   module Settings
     class ExtraDataRow
-      DEFAULT_EXTRA_DATA_ROW_CONFIG = {position: :beginning, data: [{ type: :filename, label: "Filename" }]}
+      # DEFAULT_EXTRA_DATA_ROW_CONFIG = {position: :beginning, data: [{ type: :filename, label: "Filename" }]}
+      DEFAULT_EXTRA_DATA_ROW_CONFIG = {}
 
       class FilenameExtraDataRow
         TYPE = :filename
@@ -37,9 +38,9 @@ module MergeExcel
       def read_data_array(array)
         array.each do |h|
           if h[:type]==:filename
-            @data << FilenameExtraDataRow.new(h.fetch(:heading_text){"Filename"})
+            @data << FilenameExtraDataRow.new(h.fetch(:label){"Filename"})
           elsif h[:type]==:cell_value
-            @data << CellValueExtraDataRow.new(h.fetch(:heading_text))
+            @data << CellValueExtraDataRow.new(h.fetch(:label){"Field"}, h)
           end
         end
       end

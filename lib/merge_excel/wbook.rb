@@ -30,9 +30,14 @@ module MergeExcel
       SpreadsheetWriter.create(filepath) do |wb|
         @sheets.each_with_index do |sheet, sheet_idx|
           s = wb.add_worksheet_at(sheet_idx, sheet.name)
-          s.add_row_at(0, sheet.header)
+          if sheet.header
+            s.add_row_at(0, sheet.header)
+            offset = 1
+          else
+            offset = 0
+          end
           sheet.data_rows.each_with_index do |data_row, row_idx|
-            s.add_row_at(row_idx+1, data_row)
+            s.add_row_at(row_idx+offset, data_row)
           end
         end
       end
@@ -50,7 +55,7 @@ module MergeExcel
       sh = Sheet.new(sheet, idx)
       if sh_stt.import_header?
         arr = sheet.row_values(sh_stt.header_row, sh_stt.data_first_column, sh_stt.data_last_column)
-        sh.add_header(arr, @settings.extra_data_rows.get(idx)) # TODO: funziona questo @settings.extra_data_rows.get(idx)
+        sh.add_header(arr, @settings.extra_data_rows.get(idx))
       end
       @sheets << sh
       sh

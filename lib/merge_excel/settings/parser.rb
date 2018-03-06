@@ -19,7 +19,7 @@ module MergeExcel
       end
 
       private
-      
+
       def read_sheets_index(obj)
         if obj==:all || obj==[:all]
           @sheets_idxs = :all
@@ -32,7 +32,7 @@ module MergeExcel
       def read_data_rows(h)
         @data_rows = DataRows.new
         h.each_pair do |k,v|
-          @data_rows.insert(k, h)
+          @data_rows.insert(k, v)
         end
       end
 
