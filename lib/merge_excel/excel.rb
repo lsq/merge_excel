@@ -2,7 +2,7 @@ module MergeExcel
   class Excel
     attr_reader :files
 
-    def initialize(input_dir, options)
+    def initialize(input_dir, options={})
       @settings = Settings::Parser.new(options)
       @files    = Dir.glob(File.join(input_dir, @settings.selector_pattern))
     end

@@ -27,7 +27,7 @@ module Helpers
 
 
   def options_1
-    options = {
+    {
       selector_pattern: "*.{xlsx,xls}",
       sheets_idxs:      [0,1,2],
       data_rows: {
@@ -55,11 +55,10 @@ module Helpers
         }
       }
     }
-    options
   end
 
   def options_2
-    options = {
+    {
       selector_pattern: "*.{xlsx,xls}",
       sheets_idxs:      [1,2],
       data_rows: {
@@ -94,7 +93,6 @@ module Helpers
         }
       }
     }
-    options
   end
 
 end
