@@ -13,31 +13,28 @@ describe MergeExcel do
 
   it 'select only xls files' do
     options = {
-      input_dir: mixed_xls_xlsx_dir_path,
-      output_file_path: File.join(results_dir_path, "fake_name.xlsx")
+      selector_pattern: "*.xls"
     }
-    e = MergeExcel::Excel.new(options, "*.xls")
+    e = MergeExcel::Excel.new(mixed_xls_xlsx_dir_path, options)
     expect(e.files.size).to eq 2
   end
 
   it 'select only xlsx files' do
     options = {
-      input_dir: mixed_xls_xlsx_dir_path,
-      output_file_path: File.join(results_dir_path, "fake_name.xlsx")
+      selector_pattern: "*.xlsx"
     }
-    e = MergeExcel::Excel.new(options, "*.xlsx")
+    e = MergeExcel::Excel.new(mixed_xls_xlsx_dir_path, options)
     expect(e.files.size).to eq 3
   end
 
   it 'select both xls and xlsx files' do
     options = {
-      input_dir: mixed_xls_xlsx_dir_path,
-      output_file_path: File.join(results_dir_path, "fake_name.xlsx")
+      selector_pattern: "*.{xlsx,xls}"
     }
-    e = MergeExcel::Excel.new(options, "*.{xlsx,xls}")
+    e = MergeExcel::Excel.new(mixed_xls_xlsx_dir_path, options)
     expect(e.files.size).to eq 5
 
-    e2 = MergeExcel::Excel.new(options) # default version
+    e2 = MergeExcel::Excel.new(mixed_xls_xlsx_dir_path, {}) # default version
     expect(e2.files.size).to eq 5
   end
 
@@ -50,8 +47,6 @@ describe MergeExcel do
     it "skip the header line" do
       output_file_path = File.join(results_dir_path, "merged.#{suffix}")
       options = {
-        input_dir:        xlsx_dir2_path,
-        output_file_path: output_file_path,
         sheets_idxs:      [1],
         data_rows: {
           1 => {
@@ -60,8 +55,8 @@ describe MergeExcel do
           }
         }
       }
-      e = MergeExcel::Excel.new(options, "*.{xlsx,xls}")
-      e.merge
+      e = MergeExcel::Excel.new(xlsx_dir2_path, options)
+      e.merge output_file_path
       m_book = RubyXL::Parser.parse(output_file_path)
       expect(m_book.cell_value_at(0,0,2)).to eq "Ruby Patel"
     end
@@ -70,9 +65,7 @@ describe MergeExcel do
     it "skip two data lines" do
       output_file_path = File.join(results_dir_path, "merged.#{suffix}")
       options = {
-        input_dir:        xlsx_dir2_path,
-        output_file_path: output_file_path,
-        sheets_idxs:      [1],
+        sheets_idxs: [1],
         data_rows: {
           1 => {
             header_row: 0, # or :missing
@@ -80,8 +73,8 @@ describe MergeExcel do
           }
         }
       }
-      e = MergeExcel::Excel.new(options, "*.{xlsx,xls}")
-      e.merge
+      e = MergeExcel::Excel.new(xlsx_dir2_path, options)
+      e.merge output_file_path
       m_book = RubyXL::Parser.parse(output_file_path)
       expect(m_book.cell_value_at(0,1,2)).to eq "Devin Huddleston"
       expect(m_book.cell_value_at(0,5,2)).to eq "Winnie Moss"
@@ -91,8 +84,6 @@ describe MergeExcel do
     it "take column 2 and 3" do
       output_file_path = File.join(results_dir_path, "merged.#{suffix}")
       options = {
-        input_dir:        xlsx_dir2_path,
-        output_file_path: output_file_path,
         sheets_idxs:      [1],
         data_rows: {
           1 => {
@@ -103,8 +94,8 @@ describe MergeExcel do
           }
         }
       }
-      e = MergeExcel::Excel.new(options, "*.{xlsx,xls}")
-      e.merge
+      e = MergeExcel::Excel.new(xlsx_dir2_path, options)
+      e.merge output_file_path
       m_book = RubyXL::Parser.parse(output_file_path)
       expect(m_book.cell_value_at(0,1,0)).to eq "Ruby Patel"
       expect(m_book.cell_value_at(0,1,1)).to eq "Stockholm"
@@ -116,8 +107,6 @@ describe MergeExcel do
     it "put filename at end" do
       output_file_path = File.join(results_dir_path, "merged.#{suffix}")
       options = {
-        input_dir:        xlsx_dir2_path,
-        output_file_path: output_file_path,
         sheets_idxs:      [1],
         data_rows: {
           1 => {
@@ -136,10 +125,9 @@ describe MergeExcel do
             ]
           }
         }
-
       }
-      e = MergeExcel::Excel.new(options, "*.{xlsx,xls}")
-      e.merge
+      e = MergeExcel::Excel.new(xlsx_dir2_path, options)
+      e.merge output_file_path
       m_book = RubyXL::Parser.parse(output_file_path)
       expect(m_book.cell_value_at(0,0,0)).to eq "Order ID"
       expect(m_book.cell_value_at(0,0,5)).to eq "Filename"
@@ -156,14 +144,8 @@ describe MergeExcel do
     ].each do |h|
       it "merge #{h[:str]} sheet(s)" do
         output_file_path = File.join(results_dir_path, "merged.#{suffix}")
-        options = options_2(xlsx_dir2_path, output_file_path)
-        options = {
-          input_dir:        xlsx_dir_path,
-          output_file_path: output_file_path,
-          sheets_idxs:      h[:arr]
-        }
-        e = MergeExcel::Excel.new(options, "*.{xlsx,xls}")
-        e.merge
+        e = MergeExcel::Excel.new(xlsx_dir_path, { sheets_idxs: h[:arr] })
+        e.merge output_file_path
         m_book = RubyXL::Parser.parse(output_file_path)
         expect(m_book.count_worksheets).to eq h[:num]
       end
@@ -174,9 +156,8 @@ describe MergeExcel do
 
     it 'Two sheets specifying sheet_idx, header_rows, data_rows and extra_data_rows' do
       output_file_path = File.join(results_dir_path, "merged.#{suffix}")
-      options = options_2(xlsx_dir2_path, output_file_path)
-      e = MergeExcel::Excel.new(options, "*.{xlsx,xls}")
-      e.merge
+      e = MergeExcel::Excel.new(xlsx_dir2_path, options_2)
+      e.merge output_file_path
 
       m_book = RubyXL::Parser.parse(output_file_path)
       expect(m_book.cell_value_at(0,0,0)).to eq "Filename"
@@ -218,9 +199,8 @@ describe MergeExcel do
 
     it 'All sheets specifying sheet_idx, header_rows and data_rows' do
       output_file_path = File.join(results_dir_path, "merged.xlsx")
-      options = options_1(xlsx_dir_path, output_file_path)
-      e = MergeExcel::Excel.new(options, "*.{xlsx,xls}")
-      e.merge
+      e = MergeExcel::Excel.new(xlsx_dir_path, options_1)
+      e.merge output_file_path
 
       m_book = RubyXL::Parser.parse(output_file_path)
       row_indexes = {0 => 0, 1 => 0, 2 => 0}
@@ -249,10 +229,11 @@ describe MergeExcel do
         end
       end
     end
-
-
-
   end
+
+
+
+
 
   context 'when merge xls files' do
     let(:suffix) { "xls" }
@@ -261,18 +242,16 @@ describe MergeExcel do
     it "skip the header line" do
       output_file_path = File.join(results_dir_path, "merged.#{suffix}")
       options = {
-        input_dir:        xls_dir2_path,
-        output_file_path: output_file_path,
         sheets_idxs:      [1],
         data_rows: {
           1 => {
-            header_row: :missing, # or :missing
+            header_row: :missing,
             data_starting_row: 1
           }
         }
       }
-      e = MergeExcel::Excel.new(options, "*.{xlsx,xls}")
-      e.merge
+      e = MergeExcel::Excel.new(xls_dir2_path, options)
+      e.merge output_file_path
       m_book = Spreadsheet.open(output_file_path)
       expect(m_book.cell_value_at(0,0,2)).to eq "Ruby Patel"
     end
@@ -281,9 +260,7 @@ describe MergeExcel do
     it "skip two data lines" do
       output_file_path = File.join(results_dir_path, "merged.#{suffix}")
       options = {
-        input_dir:        xls_dir2_path,
-        output_file_path: output_file_path,
-        sheets_idxs:      [1],
+        sheets_idxs: [1],
         data_rows: {
           1 => {
             header_row: 0, # or :missing
@@ -291,8 +268,8 @@ describe MergeExcel do
           }
         }
       }
-      e = MergeExcel::Excel.new(options, "*.{xlsx,xls}")
-      e.merge
+      e = MergeExcel::Excel.new(xls_dir2_path, options)
+      e.merge output_file_path
       m_book = Spreadsheet.open(output_file_path)
       expect(m_book.cell_value_at(0,1,2)).to eq "Devin Huddleston"
       expect(m_book.cell_value_at(0,5,2)).to eq "Winnie Moss"
@@ -302,20 +279,18 @@ describe MergeExcel do
     it "take column 2 and 3" do
       output_file_path = File.join(results_dir_path, "merged.#{suffix}")
       options = {
-        input_dir:        xls_dir2_path,
-        output_file_path: output_file_path,
-        sheets_idxs:      [1],
+        sheets_idxs: [1],
         data_rows: {
           1 => {
-            header_row: 0, # or :missing
+            header_row: 0,
             data_starting_row: 1,
             data_first_column: 2,
             data_last_column: 3 # omit or :last to get all columns
           }
         }
       }
-      e = MergeExcel::Excel.new(options, "*.{xlsx,xls}")
-      e.merge
+      e = MergeExcel::Excel.new(xls_dir2_path, options)
+      e.merge output_file_path
       m_book = Spreadsheet.open(output_file_path)
       expect(m_book.cell_value_at(0,1,0)).to eq "Ruby Patel"
       expect(m_book.cell_value_at(0,1,1)).to eq "Stockholm"
@@ -327,9 +302,7 @@ describe MergeExcel do
     it "put filename at end" do
       output_file_path = File.join(results_dir_path, "merged.#{suffix}")
       options = {
-        input_dir:        xls_dir2_path,
-        output_file_path: output_file_path,
-        sheets_idxs:      [1],
+        sheets_idxs: [1],
         data_rows: {
           1 => {
             header_row: 0,
@@ -347,10 +320,9 @@ describe MergeExcel do
             ]
           }
         }
-
       }
-      e = MergeExcel::Excel.new(options, "*.{xlsx,xls}")
-      e.merge
+      e = MergeExcel::Excel.new(xls_dir2_path, options)
+      e.merge output_file_path
       m_book = Spreadsheet.open(output_file_path)
       expect(m_book.cell_value_at(0,0,0)).to eq "Order ID"
       expect(m_book.cell_value_at(0,0,5)).to eq "Filename"
@@ -367,14 +339,8 @@ describe MergeExcel do
     ].each do |h|
       it "merge #{h[:str]} sheet(s)" do
         output_file_path = File.join(results_dir_path, "merged.#{suffix}")
-        options = options_2(xlsx_dir2_path, output_file_path)
-        options = {
-          input_dir:        xlsx_dir_path,
-          output_file_path: output_file_path,
-          sheets_idxs:      h[:arr]
-        }
-        e = MergeExcel::Excel.new(options, "*.{xlsx,xls}")
-        e.merge
+        e = MergeExcel::Excel.new(xlsx_dir_path, { sheets_idxs: h[:arr] })
+        e.merge output_file_path
         m_book = Spreadsheet.open(output_file_path)
         expect(m_book.count_worksheets).to eq h[:num]
       end
@@ -382,11 +348,9 @@ describe MergeExcel do
 
 
     it 'Two sheets specifying sheet_idx, header_rows, data_rows and extra_data_rows' do
-      suffix = "xls"
       output_file_path = File.join(results_dir_path, "merged.#{suffix}")
-      options = options_2(xls_dir2_path, output_file_path)
-      e = MergeExcel::Excel.new(options, "*.{xlsx,xls}")
-      e.merge
+      e = MergeExcel::Excel.new(xls_dir2_path, options_2)
+      e.merge output_file_path
 
       m_book = Spreadsheet.open(output_file_path)
 
@@ -428,9 +392,8 @@ describe MergeExcel do
 
     it 'merge all sheets when specify sheet_idx, header_rows and data_rows' do
       output_file_path = File.join(results_dir_path, "merged.xls")
-      options = options_1(xls_dir_path, output_file_path)
-      e = MergeExcel::Excel.new(options, "*.{xlsx,xls}")
-      e.merge
+      e = MergeExcel::Excel.new(xls_dir_path, options_1)
+      e.merge output_file_path
 
       m_book = Spreadsheet.open(output_file_path)
       row_indexes = {0 => 0, 1 => 0, 2 => 0}
@@ -459,9 +422,5 @@ describe MergeExcel do
         end
       end
     end
-
   end
-
-
-
 end

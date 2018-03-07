@@ -26,10 +26,9 @@ module Helpers
 
 
 
-  def options_1(input_dir_path, output_file_path)
+  def options_1
     options = {
-      input_dir:        input_dir_path,
-      output_file_path: output_file_path,
+      selector_pattern: "*.{xlsx,xls}",
       sheets_idxs:      [0,1,2],
       data_rows: {
         0 => {
@@ -59,10 +58,9 @@ module Helpers
     options
   end
 
-  def options_2(input_dir_path, output_file_path)
+  def options_2
     options = {
-      input_dir:        input_dir_path,
-      output_file_path: output_file_path,
+      selector_pattern: "*.{xlsx,xls}",
       sheets_idxs:      [1,2],
       data_rows: {
         :any => {

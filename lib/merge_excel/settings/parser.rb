@@ -1,10 +1,9 @@
 module MergeExcel
   module Settings
     class Parser
-      attr_reader :input_dir, :output_file_path, :sheets_idxs, :data_rows, :extra_data_rows
+      attr_reader :selector_pattern, :sheets_idxs, :data_rows, :extra_data_rows
       def initialize(hash)
-        @input_dir         = hash.fetch(:input_dir)
-        @output_file_path  = hash.fetch(:output_file_path)
+        @selector_pattern  = hash.fetch(:selector_pattern){ "*.{xls,xlsx}" }
         read_sheets_index    hash.fetch(:sheets_idxs){ :all }
         read_data_rows       hash.fetch(:data_rows){ {any: DataRow::DEFAULT_DATA_ROW_CONFIG } }
         read_extra_data_rows hash.fetch(:extra_data_rows){   {any: ExtraDataRow::DEFAULT_EXTRA_DATA_ROW_CONFIG } }
