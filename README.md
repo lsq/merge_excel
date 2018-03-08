@@ -61,7 +61,66 @@ me.merge merged_file_path
 
 In this example will be merged only '.xls' files, of which only the columns from 0 to 5 of the second sheet.
 
+#### Options explanation
 
+Note that all indexes (sheets, rows and columns) are 0-based.
+
+- `selector_pattern` is used by `Dir.glob` method for filtering files inside the source directory. Default: `"*.{xls|xlsx}"`.
+
+- `sheets_idxs` permit to select the sheets to import/merge. Pass an array with indexes (0-based) or `:all`. Default: `:all`.
+
+- pass an `{ sheet_index => rules }` hash to `data_rows` in order to specify which rows and column you want to import. You can pass `:any` in place of the `sheet_index` for default rules.
+Rules:
+    - `header_row` set the header row index. Put `:missing` to omit the header. Default is `0`
+    - `data_starting_row` set the index of the **first row** to import, default is `1`
+    - `data_first_column` set the index of the **first column** to import, default is `0`
+    - `data_last_column` set the index of the **last column** to import, default is `:last`
+
+- pass an `{ sheet_index => rules }` hash to `extra_data_rows` in order to specify extra data you want to be added to the final merge (for example you want to insert the filename you get the data). Rules:
+  - `position` define the column position of extra data, you can put at `:beginning` or  `:end`
+  - `data` define an array of desired extra data
+    - `type` can be `:filename` if you want to add filename info or `:cell_value` if you want to pick extra info from a cell
+    - `label` allow you to set extra data header name
+    - when you select `:cell_value` you have to specify `sheet_idx`, `row_idx` and `col_idx`.
+
+Another example:
+
+```ruby
+options = {
+  sheets_idxs:  :all,
+  data_rows: {
+    1 => {
+      header_row: 0,
+      data_starting_row: 1,
+      data_first_column: 0 # all columns
+    },
+    :any => {
+      header_row: :missing,
+      data_starting_row: 1,
+      data_first_column: 0,
+      data_last_column: 5
+    }
+  },
+  extra_data_rows: {
+    any: {
+      position: :beginning,
+      data: [
+        {
+          type: :filename,
+          label: "Filename"
+        },
+        {
+          type: :cell_value,
+          label: "Company",
+          sheet_idx: 0,
+          row_idx: 10,
+          col_idx: 3,
+        }
+      ]
+    }
+  }
+}
+```
 
 
 ## Development
