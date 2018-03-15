@@ -76,7 +76,7 @@ Rules:
     - `data_first_column` set the index of the **first column** to import, default is `0`
     - `data_last_column` set the index of the **last column** to import, default is `:last`
 
-- pass an `{ sheet_index => rules }` hash to `extra_data_rows` in order to specify extra data you want to be added to the final merge (for example you want to insert the filename you get the data). Rules:
+- pass an `{ sheet_index => rules }` hash to `extra_columns` in order to specify extra columns you want to be added to the final merge (for example you want to insert the filename you get the data). Rules:
   - `position` define the column position of extra data, you can put at `:beginning` or  `:end`
   - `data` define an array of desired extra data
     - `type` can be `:filename` if you want to add filename info or `:cell_value` if you want to pick extra info from a cell
@@ -101,7 +101,7 @@ options = {
       data_last_column: 5
     }
   },
-  extra_data_rows: {
+  extra_columns: {
     any: {
       position: :beginning,
       data: [

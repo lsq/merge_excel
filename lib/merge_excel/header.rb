@@ -1,10 +1,10 @@
 module MergeExcel
   class Header
-    def initialize(array, extra_data_hash)
+    def initialize(array, extra_col_hash)
 
-      if extra_data_hash
-        extra_array = extra_data_hash.data.map{|e| e.label}
-        case extra_data_hash.position
+      if extra_col_hash
+        extra_array = extra_col_hash.data.map{|e| e.label}
+        case extra_col_hash.position
         when :beginning
           @array = extra_array + array
         else

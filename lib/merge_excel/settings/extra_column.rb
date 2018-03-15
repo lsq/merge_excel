@@ -1,10 +1,9 @@
 module MergeExcel
   module Settings
-    class ExtraDataRow
-      # DEFAULT_EXTRA_DATA_ROW_CONFIG = {position: :beginning, data: [{ type: :filename, label: "Filename" }]}
-      DEFAULT_EXTRA_DATA_ROW_CONFIG = {}
+    class ExtraColumn
+      DEFAULT_EXTRA_COLUMN_CONFIG = {}
 
-      class FilenameExtraDataRow
+      class FilenameExtraColumn
         TYPE = :filename
         attr_reader :label, :type
         def initialize(label)
@@ -13,7 +12,7 @@ module MergeExcel
         end
       end
 
-      class CellValueExtraDataRow
+      class CellValueExtraColumn
         TYPE = :cell_value
         attr_reader :label, :type, :sheet_idx, :row_idx, :col_idx
         def initialize(label, coordinates_hash)
@@ -38,21 +37,21 @@ module MergeExcel
       def read_data_array(array)
         array.each do |h|
           if h[:type]==:filename
-            @data << FilenameExtraDataRow.new(h.fetch(:label){"Filename"})
+            @data << FilenameExtraColumn.new(h.fetch(:label){"Filename"})
           elsif h[:type]==:cell_value
-            @data << CellValueExtraDataRow.new(h.fetch(:label){"Field"}, h)
+            @data << CellValueExtraColumn.new(h.fetch(:label){"Field"}, h)
           end
         end
       end
 
 
       def self.with_defaults
-        new(DEFAULT_EXTRA_DATA_ROW_CONFIG)
+        new(DEFAULT_EXTRA_COLUMN_CONFIG)
       end
 
       private
       def validate_position
-        raise "Problem with 'extra_data' settings: 'position' must be :beginning or :end" unless [:beginning, :end].include?(@position)
+        raise "Problem with 'extra_column' settings: 'position' must be :beginning or :end" unless [:beginning, :end].include?(@position)
       end
     end
   end

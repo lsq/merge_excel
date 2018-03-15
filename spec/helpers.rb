@@ -50,7 +50,7 @@ module Helpers
           data_last_column: 2
         }
       },
-      extra_data_rows: {
+      extra_columns: {
         any: {
         }
       }
@@ -67,7 +67,7 @@ module Helpers
           data_starting_row: 1,
         }
       },
-      extra_data_rows: {
+      extra_columns: {
         any: {
           position: :beginning,
           data: [

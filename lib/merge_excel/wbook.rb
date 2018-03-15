@@ -18,7 +18,7 @@ module MergeExcel
           row_idx = sh_stt.data_starting_row
           loop do
             break unless cells = sheet.row_values(row_idx, sh_stt.data_first_column, sh_stt.data_last_column)
-            sh.add_data_row(cells, @settings.extra_data_rows.get(idx), book)
+            sh.add_data_row(cells, @settings.extra_columns.get(idx), book)
             row_idx+=1
           end
         end
@@ -55,7 +55,7 @@ module MergeExcel
       sh = Sheet.new(sheet, idx)
       if sh_stt.import_header?
         arr = sheet.row_values(sh_stt.header_row, sh_stt.data_first_column, sh_stt.data_last_column)
-        sh.add_header(arr, @settings.extra_data_rows.get(idx))
+        sh.add_header(arr, @settings.extra_columns.get(idx))
       end
       @sheets << sh
       sh

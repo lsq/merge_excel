@@ -11,12 +11,12 @@ module MergeExcel
       @data_rows = []
     end
 
-    def add_header(array, extra_data)
-      @header = Header.new(array, extra_data)
+    def add_header(array, extra_columns)
+      @header = Header.new(array, extra_columns)
     end
 
-    def add_data_row(array, extra_data, book)
-      @data_rows << DataRow.new(array || [], extra_data, book).array
+    def add_data_row(array, extra_columns, book)
+      @data_rows << DataRow.new(array || [], extra_columns, book).array
     end
   end
 end

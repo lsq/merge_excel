@@ -114,7 +114,7 @@ describe MergeExcel do
             data_starting_row: 1
           }
         },
-        extra_data_rows: {
+        extra_columns: {
           any: {
             position: :end,
             data: [
@@ -154,7 +154,7 @@ describe MergeExcel do
 
 
 
-    it 'Two sheets specifying sheet_idx, header_rows, data_rows and extra_data_rows' do
+    it 'Two sheets specifying sheet_idx, header_rows, data_rows and extra_columns' do
       output_file_path = File.join(results_dir_path, "merged.#{suffix}")
       e = MergeExcel::Excel.new(xlsx_dir2_path, options_2)
       e.merge output_file_path
@@ -309,7 +309,7 @@ describe MergeExcel do
             data_starting_row: 1
           }
         },
-        extra_data_rows: {
+        extra_columns: {
           any: {
             position: :end,
             data: [
@@ -347,7 +347,7 @@ describe MergeExcel do
     end
 
 
-    it 'Two sheets specifying sheet_idx, header_rows, data_rows and extra_data_rows' do
+    it 'Two sheets specifying sheet_idx, header_rows, data_rows and extra_columns' do
       output_file_path = File.join(results_dir_path, "merged.#{suffix}")
       e = MergeExcel::Excel.new(xls_dir2_path, options_2)
       e.merge output_file_path

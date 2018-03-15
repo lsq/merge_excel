@@ -1,10 +1,10 @@
 module MergeExcel
   class DataRow
     attr_reader :array
-    
-    def initialize(array, extra_data_hash, book)
-      if extra_data_hash
-        extra_array = extra_data_hash.data.map do |e|
+
+    def initialize(array, extra_col_hash, book)
+      if extra_col_hash
+        extra_array = extra_col_hash.data.map do |e|
           case e.type
           when :filename
             book.filename
@@ -14,7 +14,7 @@ module MergeExcel
             # error?
           end
         end
-        case extra_data_hash.position
+        case extra_col_hash.position
         when :beginning
           @array = extra_array + array
         else
